@@ -8,7 +8,7 @@ echo       KONFIGURASI DAN PENGUNGGAHAN PROYEK SIPRESMA KE GITHUB
 echo ==============================================================================
 echo.
 echo Direktori  : %~dp0
-echo Target Repo: https://github.com/yusbar01-alt/prestasi_man1majene
+echo Target Repo: https://github.com/yusbar01-alt/prestasi-man1majene
 echo.
 
 set "PATH=C:\Users\ADMIN\AppData\Local\Programs\Git\cmd;C:\Program Files\nodejs;%PATH%"
@@ -40,7 +40,7 @@ cd /d "%~dp0"
 echo.
 echo [3/4] Konfigurasi Remote GitHub...
 "%GIT_CMD%" remote remove origin 2>nul
-"%GIT_CMD%" remote add origin https://github.com/yusbar01-alt/prestasi_man1majene.git
+"%GIT_CMD%" remote add origin https://github.com/yusbar01-alt/prestasi-man1majene.git
 
 echo.
 echo ==============================================================================
@@ -56,7 +56,7 @@ if "%OPSI%"=="2" (
     echo (Bisa dibuat di: https://github.com/settings/tokens)
     set /p GITHUB_TOKEN="Token: "
     if not "!GITHUB_TOKEN!"=="" (
-        "%GIT_CMD%" remote set-url origin https://yusbar01-alt:!GITHUB_TOKEN!@github.com/yusbar01-alt/prestasi_man1majene.git
+        "%GIT_CMD%" remote set-url origin https://yusbar01-alt:!GITHUB_TOKEN!@github.com/yusbar01-alt/prestasi-man1majene.git
     )
 )
 
@@ -70,10 +70,10 @@ if %ERRORLEVEL% EQU 0 (
     echo  [BERHASIL] Seluruh file dan konfigurasi berhasil diunggah ke GitHub!
     echo.
     echo  Status GitHub Actions (Otomatis running & jadi hijau):
-    echo  https://github.com/yusbar01-alt/prestasi_man1majene/actions
+    echo  https://github.com/yusbar01-alt/prestasi-man1majene/actions
     echo.
     echo  Website SIPRESMA Anda akan aktif di:
-    echo  https://yusbar01-alt.github.io/prestasi_man1majene/
+    echo  https://yusbar01-alt.github.io/prestasi-man1majene/
     echo ==============================================================================
 ) else (
     echo ==============================================================================
