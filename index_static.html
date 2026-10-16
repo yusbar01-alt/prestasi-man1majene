@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPRESMA - Sistem Informasi Rekapitulasi Prestasi Siswa Madrasah</title>
+  <meta name="description" content="Aplikasi pencatatan dan rekapitulasi prestasi siswa madrasah akademik dan non-akademik terintegrasi untuk Admin, Kepala Madrasah, dan Guru Pembimbing.">
+  <meta name="keywords" content="prestasi siswa, madrasah, ksm, myres, akademik, non-akademik, rekapitulasi prestasi">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.jpg" alt="Logo Madrasah" class="sidebar-logo-img">
+        <div class="sidebar-brand">
+          <h1>SIPRES<span>MA</span></h1>
+          <p>Portal Prestasi Siswa</p>
+        </div>
+      </div>
+
+      <!-- Current Role Card -->
+      <div class="sidebar-role-badge">
+        <div class="role-badge-header">
+          <span>Hak Akses Aktif</span>
+          <span style="font-size: 0.68rem; color: #34d399;" id="roleStatusTag">● Online</span>
+        </div>
+        <div class="role-badge-user">
+          <div class="role-avatar" id="sidebarAvatar">👨‍💼</div>
+          <div class="role-info-text">
+            <div class="role-name" id="sidebarUserName">Ahmad Fauzi, S.Kom</div>
+            <div class="role-title" id="sidebarRoleTitle">Administrator Kesiswaan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu Utama</div>
+        <a class="nav-item active" data-tab="achieved" id="navAchieved">
+          <span class="nav-item-icon">🏆</span>
+          <span>Prestasi Diraih</span>
+          <span class="nav-badge" id="badgeAchievedCount">10</span>
+        </a>
+        <a class="nav-item" data-tab="upcoming" id="navUpcoming">
+          <span class="nav-item-icon">📅</span>
+          <span>Lomba Akan Datang</span>
+          <span class="nav-badge pulse" id="badgeUpcomingCount">5</span>
+        </a>
+        <a class="nav-item" data-tab="analytics" id="navAnalytics">
+          <span class="nav-item-icon">📊</span>
+          <span>Rekapitulasi Eksekutif</span>
+        </a>
+
+        <div class="nav-section-title">Aksi & Laporan</div>
+        <a class="nav-item" id="navPrintRekap">
+          <span class="nav-item-icon">🖨️</span>
+          <span>Cetak Rekap Resmi</span>
+        </a>
+        <a class="nav-item" id="navExportData">
+          <span class="nav-item-icon">📥</span>
+          <span>Ekspor Data (CSV)</span>
+        </a>
+        <a class="nav-item" id="navHelpGuide">
+          <span class="nav-item-icon">ℹ️</span>
+          <span>Alur Peran & Panduan</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-madrasah-meta">
+          <strong>MAN Unggulan Terpadu</strong><br>
+          Kementerian Agama RI<br>
+          <span style="opacity: 0.7; font-size: 0.7rem;">Tahun Ajaran 2026/2027</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="app-main">
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Buka Menu">☰</button>
+          <div class="header-title-block">
+            <h2 id="pageMainHeading">🏆 Rekapitulasi Prestasi yang Sudah Diraih</h2>
+            <div class="header-subtitle">Daftar pencapaian kejuaraan akademik & non-akademik santri madrasah</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Role Switcher -->
+          <div class="role-switch-container">
+            <span class="role-switch-label">Pilih Peran:</span>
+            <select id="roleSelector" class="role-select" aria-label="Ganti Hak Akses">
+              <option value="admin">👨‍💼 Administrator</option>
+              <option value="kepala">🎓 Kepala Madrasah</option>
+              <option value="guru">👩‍🏫 Guru Pembimbing</option>
+            </select>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="theme-toggle-btn" id="themeToggleBtn" title="Ganti Tema Gelap/Terang" aria-label="Mode Gelap">🌓</button>
+          <!-- Help Button -->
+          <button class="help-btn" id="quickHelpBtn" title="Petunjuk Penggunaan" aria-label="Panduan">❓</button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="dashboard-content">
+        <!-- Role Notice Banner (Dynamic based on selected role) -->
+        <div class="role-notice-banner" id="roleNoticeBanner">
+          <div class="banner-left">
+            <span class="banner-icon" id="bannerRoleIcon">👨‍💼</span>
+            <div class="banner-text">
+              <h4 id="bannerRoleTitle">Akses Penuh: Administrator Kesiswaan</h4>
+              <p id="bannerRoleDesc">Anda dapat menambah, memvalidasi berkas sertifikat, mengedit capaian prestasi, serta mengelola data lomba mendatang.</p>
+            </div>
+          </div>
+          <div class="banner-actions" id="bannerRoleActions">
+            <!-- Dynamic Role Actions injected by JS -->
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards -->
+        <section class="stats-grid" id="statsOverview">
+          <div class="stat-card card-emerald">
+            <div class="stat-icon-wrapper">🏆</div>
+            <div class="stat-info">
+              <div class="stat-title">Total Prestasi Diraih</div>
+              <div class="stat-value" id="statTotalAchieved">0</div>
+              <div class="stat-subtext">
+                <span class="badge-tag-stat up">↑ Aktif</span> Terverifikasi Resmi
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card card-gold">
+            <div class="stat-icon-wrapper">🥇</div>
+            <div class="stat-info">
+              <div class="stat-title">Juara 1 / Medali Emas</div>
+              <div class="stat-value" id="statGoldMedals">0</div>
+              <div class="stat-subtext">
+                <span class="badge-tag-stat highlight">Unggulan</span> Prestasi Tertinggi
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card card-blue">
+            <div class="stat-icon-wrapper">🌍</div>
+            <div class="stat-info">
+              <div class="stat-title">Nasional & Internasional</div>
+              <div class="stat-value" id="statNationalLevel">0</div>
+              <div class="stat-subtext">
+                <span id="statLevelRatio">KSM, MYRES, Robotik</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card card-purple">
+            <div class="stat-icon-wrapper">⏳</div>
+            <div class="stat-info">
+              <div class="stat-title">Lomba Akan Berlangsung</div>
+              <div class="stat-value" id="statUpcomingEvents">0</div>
+              <div class="stat-subtext">
+                <span class="badge-tag-stat highlight">Dalam Pembinaan</span> Menunggu Lomba
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Controls, Tabs & Search Filters -->
+        <section class="controls-container">
+          <div class="main-tabs-row">
+            <div class="tabs-group">
+              <button class="tab-btn active" data-tab="achieved" id="tabBtnAchieved">
+                <span>🏆 Prestasi Yang Diraih</span>
+                <span class="tab-count-badge" id="tabAchievedCount">10</span>
+              </button>
+              <button class="tab-btn upcoming-tab" data-tab="upcoming" id="tabBtnUpcoming">
+                <span>📅 Lomba Akan Datang</span>
+                <span class="tab-count-badge" id="tabUpcomingCount">5</span>
+              </button>
+              <button class="tab-btn" data-tab="analytics" id="tabBtnAnalytics">
+                <span>📊 Rekapitulasi & Grafik</span>
+              </button>
+            </div>
+
+            <div class="controls-actions-right">
+              <button class="btn btn-primary" id="btnOpenAddModal">
+                <span>➕</span>
+                <span id="btnAddModalText">Tambah Prestasi / Lomba</span>
+              </button>
+              <button class="btn btn-secondary" id="btnCetakRekapQuick">
+                <span>🖨️</span>
+                <span>Cetak Rekap</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Secondary Filter Bar (Active in Achieved and Upcoming tabs) -->
+          <div class="filter-search-row" id="filterBarRow">
+            <div class="search-box-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="searchInput" class="search-input" placeholder="Cari nama siswa, NISN, nama kompetisi, atau pembimbing...">
+            </div>
+
+            <select id="filterCategory" class="filter-select" aria-label="Filter Kategori">
+              <option value="all">Semua Kategori</option>
+              <option value="Akademik">📘 Akademik</option>
+              <option value="Non-Akademik">🎨 Non-Akademik</option>
+            </select>
+
+            <select id="filterLevel" class="filter-select" aria-label="Filter Tingkat">
+              <option value="all">Semua Tingkat</option>
+              <option value="Internasional">🌍 Internasional</option>
+              <option value="Nasional">🇮🇩 Nasional</option>
+              <option value="Provinsi">🏛️ Provinsi</option>
+              <option value="Kabupaten/Kota">🏢 Kabupaten/Kota</option>
+            </select>
+
+            <select id="filterYear" class="filter-select" aria-label="Filter Tahun Ajaran">
+              <option value="all">Semua Tahun</option>
+              <option value="2026/2027">2026/2027</option>
+              <option value="2025/2026">2025/2026</option>
+            </select>
+
+            <div class="view-toggle-btns">
+              <button class="view-btn active" id="viewGridBtn" title="Tampilan Kartu">⊞</button>
+              <button class="view-btn" id="viewTableBtn" title="Tampilan Tabel">≡</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 1: PRESTASI SUDAH DIRAIH -->
+        <section id="viewAchievedSection">
+          <!-- Card Grid View -->
+          <div class="items-grid" id="achievedGridContainer">
+            <!-- Dynamic Cards Injected by JS -->
+          </div>
+
+          <!-- Table View (Hidden by default) -->
+          <div class="table-card" id="achievedTableContainer" style="display: none;">
+            <div class="table-responsive">
+              <table class="custom-data-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Siswa & Kelas</th>
+                    <th>Nama Kejuaraan / Prestasi</th>
+                    <th>Kategori</th>
+                    <th>Tingkat</th>
+                    <th>Peringkat / Juara</th>
+                    <th>Guru Pembimbing</th>
+                    <th>Tanggal</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="achievedTableBody">
+                  <!-- Dynamic rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 2: LOMBA & AGENDA AKAN DATANG -->
+        <section id="viewUpcomingSection" style="display: none;">
+          <!-- Card Grid View -->
+          <div class="items-grid" id="upcomingGridContainer">
+            <!-- Dynamic Upcoming Cards Injected by JS -->
+          </div>
+
+          <!-- Table View (Hidden by default) -->
+          <div class="table-card" id="upcomingTableContainer" style="display: none;">
+            <div class="table-responsive">
+              <table class="custom-data-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Delegasi Siswa</th>
+                    <th>Nama Agenda / Lomba</th>
+                    <th>Kategori</th>
+                    <th>Tingkat</th>
+                    <th>Target Juara</th>
+                    <th>Pelaksanaan</th>
+                    <th>Status Tahapan</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="upcomingTableBody">
+                  <!-- Dynamic rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 3: REKAPITULASI & ANALITIK EKSEKUTIF (KEPALA MADRASAH) -->
+        <section id="viewAnalyticsSection" class="analytics-section" style="display: none;">
+          <!-- Executive Banner -->
+          <div class="executive-summary-banner">
+            <div class="exec-text">
+              <h3>🎓 Laporan Rekapitulasi Eksekutif Prestasi Madrasah</h3>
+              <p>Ringkasan komprehensif performa kompetisi sains, riset madrasah (MYRES), keagamaan (MTQ/Tahfidz), robotika, seni dan olahraga untuk monitoring pimpinan dan evaluasi mutu pendidikan.</p>
+            </div>
+            <div class="exec-actions">
+              <button class="btn btn-gold" id="btnExecPrintOfficial">
+                <span>🖨️</span> Cetak Rekap Resmi
+              </button>
+              <button class="btn btn-secondary" id="btnExecExportCSV">
+                <span>📥</span> Unduh Format Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="charts-row">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <h4>📊 Distribusi Tingkat Kejuaraan</h4>
+                <span class="badge-tag-stat highlight">Semua Kategori</span>
+              </div>
+              <div class="chart-canvas-container">
+                <canvas id="levelDonutChart" width="280" height="240"></canvas>
+              </div>
+              <div class="legend-list" id="levelChartLegend"></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <h4>📈 Tren Perolehan Prestasi per Bulan</h4>
+                <span class="badge-tag-stat up">Tahun 2026</span>
+              </div>
+              <div class="chart-canvas-container">
+                <canvas id="monthlyBarChart" width="400" height="240"></canvas>
+              </div>
+              <div class="legend-list" id="monthlyChartLegend"></div>
+            </div>
+          </div>
+
+          <!-- Summary Matrix Table -->
+          <div class="table-card" style="margin-top: 10px;">
+            <div class="modal-header" style="background: var(--bg-card); border-bottom: 1px solid var(--border-light);">
+              <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">📋 Matriks Rekapitulasi Capaian per Bidang & Kategori</h4>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-data-table">
+                <thead>
+                  <tr>
+                    <th>Bidang Kompetisi</th>
+                    <th>Kategori</th>
+                    <th>Internasional</th>
+                    <th>Nasional</th>
+                    <th>Provinsi</th>
+                    <th>Kab/Kota</th>
+                    <th>Total Diraih</th>
+                    <th>Lomba Mendatang</th>
+                  </tr>
+                </thead>
+                <tbody id="matrixTableBody">
+                  <!-- Injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 1: TAMBAH / EDIT PRESTASI & AGENDA LOMBA
+       ========================================================================== -->
+  <div class="modal-overlay" id="addEditModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="formModalTitle">➕ Tambah Data Baru</h3>
+        <button class="modal-close-btn" id="closeAddModalBtn" aria-label="Tutup Modal">&times;</button>
+      </div>
+      <form id="prestasiForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <!-- Record Type: Achieved or Upcoming -->
+            <div class="form-group full-width">
+              <label class="form-label">Tipe Entri Data <span style="color:red;">*</span></label>
+              <div style="display: flex; gap: 12px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                  <input type="radio" name="entryType" value="achieved" checked id="radioAchieved"> 🏆 Prestasi yang Sudah Diraih
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                  <input type="radio" name="entryType" value="upcoming" id="radioUpcoming"> 📅 Lomba / Agenda yang Akan Berlangsung
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="inputTitle">Nama Kejuaraan / Kompetisi <span style="color:red;">*</span></label>
+              <input type="text" id="inputTitle" class="form-control" placeholder="Contoh: Juara 1 KSM Matematika Tingkat Nasional" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputCategory">Kategori <span style="color:red;">*</span></label>
+              <select id="inputCategory" class="form-control" required>
+                <option value="Akademik">Akademik</option>
+                <option value="Non-Akademik">Non-Akademik</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputField">Bidang Kompetisi <span style="color:red;">*</span></label>
+              <select id="inputField" class="form-control" required>
+                <option value="KSM Sains">KSM Sains</option>
+                <option value="Riset & Karya Ilmiah (MYRES)">Riset & Karya Ilmiah (MYRES)</option>
+                <option value="Robotika & AI">Robotika & AI</option>
+                <option value="Bahasa & Literasi">Bahasa & Literasi</option>
+                <option value="Keagamaan & Tahfidz">Keagamaan & Tahfidz</option>
+                <option value="Seni Budaya & Kaligrafi">Seni Budaya & Kaligrafi</option>
+                <option value="Olahraga & Seni Bela Diri">Olahraga & Seni Bela Diri</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputLevel">Tingkat Kejuaraan <span style="color:red;">*</span></label>
+              <select id="inputLevel" class="form-control" required>
+                <option value="Internasional">Internasional</option>
+                <option value="Nasional">Nasional</option>
+                <option value="Provinsi">Provinsi</option>
+                <option value="Kabupaten/Kota">Kabupaten/Kota</option>
+                <option value="Kecamatan">Kecamatan</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="fieldRankGroup">
+              <label class="form-label" for="inputRank">Peringkat / Capaian <span style="color:red;">*</span></label>
+              <input type="text" id="inputRank" class="form-control" placeholder="Contoh: Juara 1 (Medali Emas)">
+            </div>
+
+            <div class="form-group" id="fieldTargetRankGroup" style="display: none;">
+              <label class="form-label" for="inputTargetRank">Target Capaian <span style="color:red;">*</span></label>
+              <input type="text" id="inputTargetRank" class="form-control" placeholder="Contoh: Target Medali Emas / Juara 1">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputDate" id="labelDate">Tanggal Penghargaan <span style="color:red;">*</span></label>
+              <input type="date" id="inputDate" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputYear">Tahun Ajaran <span style="color:red;">*</span></label>
+              <select id="inputYear" class="form-control" required>
+                <option value="2026/2027">2026/2027</option>
+                <option value="2025/2026">2025/2026</option>
+                <option value="2024/2025">2024/2025</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="inputOrganizer">Lembaga Penyelenggara</label>
+              <input type="text" id="inputOrganizer" class="form-control" placeholder="Contoh: Direktorat KSKK Madrasah Kemenag RI">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputStudentName">Nama Siswa / Delegasi <span style="color:red;">*</span></label>
+              <input type="text" id="inputStudentName" class="form-control" placeholder="Nama lengkap siswa peraih prestasi" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputStudentClass">Kelas & NISN</label>
+              <input type="text" id="inputStudentClass" class="form-control" placeholder="Contoh: XII IPA 1 (NISN: 0087412993)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputMentorName">Guru Pembimbing</label>
+              <input type="text" id="inputMentorName" class="form-control" placeholder="Nama pembimbing pendamping">
+            </div>
+
+            <!-- Specific for Upcoming -->
+            <div class="form-group" id="fieldUpcomingStageGroup" style="display: none;">
+              <label class="form-label" for="inputStage">Status Tahap Persiapan</label>
+              <select id="inputStage" class="form-control">
+                <option value="Pendaftaran Berkas">Pendaftaran Berkas</option>
+                <option value="Pembinaan Intensif">Pembinaan Intensif</option>
+                <option value="Uji Coba & Simulasi">Uji Coba & Simulasi</option>
+                <option value="Delegasi Berangkat">Delegasi Berangkat</option>
+                <option value="Sedang Berlangsung">Sedang Berlangsung</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="inputNotes">Catatan / Deskripsi Singkat</label>
+              <textarea id="inputNotes" class="form-control" rows="2" placeholder="Catatan tambahan mengenai prestasi atau persiapan lomba"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelAddModalBtn">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitForm">Simpan Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: KONVERSI CEPAT (UPCOMING -> ACHIEVED)
+       ========================================================================== -->
+  <div class="modal-overlay" id="convertModal">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3>🎉 Catat Hasil Kejuaraan Lomba</h3>
+        <button class="modal-close-btn" id="closeConvertModalBtn">&times;</button>
+      </div>
+      <form id="convertForm">
+        <div class="modal-body">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+            Lomba telah selesai diselenggarakan! Masukkan hasil perolehan juara siswa untuk memindahkannya ke daftar <strong>Prestasi yang Sudah Diraih</strong>.
+          </p>
+          <div class="form-group full-width" style="margin-bottom: 12px;">
+            <label class="form-label">Nama Lomba</label>
+            <input type="text" id="convertTitle" class="form-control" readonly style="background: var(--bg-muted); font-weight: 700;">
+          </div>
+          <div class="form-group full-width" style="margin-bottom: 12px;">
+            <label class="form-label">Siswa Delegasi</label>
+            <input type="text" id="convertStudent" class="form-control" readonly style="background: var(--bg-muted);">
+          </div>
+          <div class="form-group full-width" style="margin-bottom: 12px;">
+            <label class="form-label" for="convertRank">Juara / Hasil yang Diraih <span style="color:red;">*</span></label>
+            <input type="text" id="convertRank" class="form-control" placeholder="Contoh: Juara 1 (Medali Emas)" required>
+          </div>
+          <div class="form-group full-width" style="margin-bottom: 12px;">
+            <label class="form-label" for="convertDate">Tanggal Pengumuman / Penghargaan <span style="color:red;">*</span></label>
+            <input type="date" id="convertDate" class="form-control" required>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label" for="convertNotes">Catatan Tambahan / Hadiah</label>
+            <input type="text" id="convertNotes" class="form-control" placeholder="Contoh: Piala Bergilir + Beasiswa Pembinaan">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelConvertBtn">Batal</button>
+          <button type="submit" class="btn btn-gold">🏆 Konfirmasi & Pindahkan ke Prestasi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: CERTIFICATE VIEWER
+       ========================================================================== -->
+  <div class="modal-overlay" id="certModal">
+    <div class="modal-content" style="max-width: 740px;">
+      <div class="modal-header">
+        <h3 id="certModalTitle">📜 Bukti Sertifikat / Piagam Penghargaan</h3>
+        <button class="modal-close-btn" id="closeCertModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="certificate-preview-container">
+          <img src="assets/certificate.jpg" alt="Bukti Sertifikat Prestasi" class="cert-image" id="certImagePreview">
+          <div style="text-align: center;">
+            <h4 id="certStudentName" style="font-size: 1.15rem; color: var(--text-main); margin-bottom: 4px;">Muhammad Rayhan Al-Fatih</h4>
+            <p id="certAchievementInfo" style="font-size: 0.85rem; color: var(--text-muted);">Juara 1 Medali Emas KSM Matematika Terintegrasi</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="closeCertBtnFooter">Tutup</button>
+        <a href="assets/certificate.jpg" download="Sertifikat_Prestasi_Madrasah.jpg" class="btn btn-primary">
+          <span>⬇️</span> Unduh Salinan Sertifikat
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 4: CETAK REKAPITULASI RESMI (KOP SURAT DINAS MADRASAH)
+       ========================================================================== -->
+  <div class="modal-overlay" id="printModal">
+    <div class="modal-content" style="max-width: 860px; background: #ffffff;">
+      <div class="modal-header no-print">
+        <h3>🖨️ Format Cetak Laporan Rekapitulasi Resmi</h3>
+        <button class="modal-close-btn" id="closePrintModalBtn">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 0;">
+        <div class="official-print-document" id="printableOfficialDoc">
+          <!-- Kop Surat Madrasah -->
+          <div class="print-letterhead">
+            <img src="assets/logo.jpg" alt="Logo Kemenag" class="print-letterhead-logo">
+            <div class="print-letterhead-text">
+              <h2>KEMENTERIAN AGAMA REPUBLIK INDONESIA</h2>
+              <h3>KANTOR KEMENTERIAN AGAMA KABUPATEN/KOTA</h3>
+              <h3>MADRASAH ALIYAH NEGERI (MAN) UNGGULAN TERPADU</h3>
+              <p>Jalan Pendidikan No. 77 Kompleks Sains Terpadu, Telp. (021) 7894561 Kode Pos 15412</p>
+              <p>Email: kesiswaan@man-unggulan.sch.id | Website: www.man-unggulan.sch.id</p>
+            </div>
+          </div>
+
+          <!-- Judul Laporan -->
+          <div class="print-doc-title">
+            <h4>REKAPITULASI CAPAIAN PRESTASI SISWA AKADEMIK DAN NON-AKADEMIK</h4>
+            <p id="printDocMeta">Tahun Pelajaran 2026/2027 | Nomor: B-814/Ma.11.02/PP.00.6/10/2026</p>
+          </div>
+
+          <!-- Filter Info Summary in Print -->
+          <div style="font-size: 9pt; margin-bottom: 12px; display: flex; justify-content: space-between;">
+            <span><strong>Kategori:</strong> Seluruh Kategori (Akademik & Non-Akademik)</span>
+            <span><strong>Tanggal Cetak:</strong> <span id="printCurrentDate">16 Oktober 2026</span></span>
+          </div>
+
+          <!-- Print Table -->
+          <table class="print-table">
+            <thead>
+              <tr>
+                <th style="width: 28px;">No</th>
+                <th style="width: 140px;">Nama Siswa / Tim</th>
+                <th style="width: 70px;">Kelas</th>
+                <th>Nama Kejuaraan / Kompetisi</th>
+                <th style="width: 75px;">Kategori</th>
+                <th style="width: 80px;">Tingkat</th>
+                <th style="width: 105px;">Peringkat</th>
+                <th style="width: 120px;">Guru Pembimbing</th>
+              </tr>
+            </thead>
+            <tbody id="printTableRows">
+              <!-- Injected by JS -->
+            </tbody>
+          </table>
+
+          <!-- Tanda Tangan Resmi -->
+          <div class="print-signatures">
+            <div class="signature-box">
+              <p>Mengetahui,</p>
+              <p>Waka Kesiswaan</p>
+              <div class="signature-space"></div>
+              <p class="signature-name">Ahmad Fauzi, S.Kom</p>
+              <p>NIP. 19820514 200801 1 015</p>
+            </div>
+
+            <div class="signature-box">
+              <p>Ditetapkan di: Madrasah</p>
+              <p>Kepala Madrasah Aliyah,</p>
+              <div class="signature-space"></div>
+              <p class="signature-name" id="printKepalaName">Dr. H. Miftahul Ulum, M.Ag</p>
+              <p id="printKepalaNip">NIP. 19750812 200003 1 002</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer no-print">
+        <button type="button" class="btn btn-secondary" id="closePrintModalFooterBtn">Tutup</button>
+        <button type="button" class="btn btn-primary" id="btnExecuteBrowserPrint">
+          <span>🖨️</span> Cetak / Simpan PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 5: PANDUAN PENGGUNA PER PERAN (ROLE GUIDE)
+       ========================================================================== -->
+  <div class="modal-overlay" id="guideModal">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3>ℹ️ Alur & Panduan Penggunaan Sistem</h3>
+        <button class="modal-close-btn" id="closeGuideModalBtn">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size: 0.88rem; line-height: 1.6;">
+        <h4 style="color: var(--primary-700); margin-bottom: 8px;">1. Peran Administrator Kesiswaan (👨‍💼)</h4>
+        <p style="margin-bottom: 14px; color: var(--text-muted);">
+          Memiliki akses penuh untuk memasukkan data prestasi, mengedit atau menghapus entri, memverifikasi keabsahan sertifikat, dan mengunduh database backup.
+        </p>
+
+        <h4 style="color: var(--primary-700); margin-bottom: 8px;">2. Peran Kepala Madrasah (🎓)</h4>
+        <p style="margin-bottom: 14px; color: var(--text-muted);">
+          Didesain untuk pimpinan madrasah untuk melihat rekapitulasi eksekutif: statistik medali emas/perak, perbandingan prestasi akademik vs non-akademik, grafik capaian bulanan, serta mengesahkan dan <strong>Mencetak Dokumen Rekapitulasi Resmi Berkop Surat</strong>.
+        </p>
+
+        <h4 style="color: var(--primary-700); margin-bottom: 8px;">3. Peran Guru Pembimbing (👩‍🏫)</h4>
+        <p style="margin-bottom: 14px; color: var(--text-muted);">
+          Fokus pada bimbingan siswa: Mendaftarkan <strong>Agenda Lomba yang Akan Datang</strong>, memantau tahapan pembinaan/karantina lomba, dan ketika lomba selesai cukup klik <strong>"🎉 Selesaikan & Catat Juara"</strong> untuk otomatis mengonversi ke prestasi diraih!
+        </p>
+
+        <div style="background: var(--bg-muted); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--gold-500); margin-top: 10px;">
+          <strong>💡 Tips:</strong> Anda dapat mengganti peran kapan saja melalui tombol menu di pojok kanan atas untuk melihat tampilan dan fitur sesuai sudut pandang masing-masing aktor sekolah.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="closeGuideBtnFooter">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
